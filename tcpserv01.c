@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
 
   listenfd = socket(AF_INET, SOCK_STREAM, 0);
   if (listenfd < 0) {
-    fprintf(stderr, "socket create error");
+    fprintf(stderr, "socket create error\n");
     exit(0);
   }
 
@@ -27,12 +27,12 @@ int main(int argc, char **argv) {
   servaddr.sin_port = htons(8001);
 
   if (bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
-    fprintf(stderr, "bind error");
+    fprintf(stderr, "bind error\n");
     exit(0);
   }
 
   if (listen(listenfd, 0) < 0) {
-    fprintf(stderr, "listend error");
+    fprintf(stderr, "listend error\n");
     exit(0);
   }
 
@@ -51,15 +51,21 @@ int main(int argc, char **argv) {
 }
 
 void str_echo(int sockfd) {
+  // fprintf(stderr, "enter str_echo");
   ssize_t n;
   char buf[2048];
 
 again:
-  while (n = read(sockfd, buf, 2048) > 0)
-    write(sockfd, buf, n);
-
+  while ((n = read(sockfd, buf, 2048)) > 0){
+    // printf("read buff: %d, %s", n, buf);
+    if (write(sockfd, buf, n) < 0) {
+      fprintf(stderr, "write error\n");
+      exit(0);
+    }
+    // printf("write finished %d\n", n);
+  }
   if (n < 0 && errno == EINTR)
     goto again;
   else if (n < 0)
-    fprintf(stderr, "str_echo: read error");
+    fprintf(stderr, "str_echo: read error\n");
 }

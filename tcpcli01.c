@@ -45,12 +45,17 @@ int main(int argc, char** argv) {
 void str_cli(FILE *fp, int sockfd) {
   char sendline[2048], recvline[2048];
   while (fgets(sendline, 2048, fp) != NULL) {
+    // fprintf(stderr, "sendline: %s", sendline);
     write(sockfd, sendline, strlen(sendline));
+    // fprintf(stderr, "write finished\n");
 
-    if (readline(sockfd, recvline, 2048) == 0) {
+    int n;
+    if ((n = readline(sockfd, recvline, 2048)) < 0) {
       fprintf(stderr, "read error");
       exit(0);
     }
+
+    // fprintf(stderr, "readline:%d:%s", n, recvline);
 
     fputs(recvline, stdout);
   }
@@ -59,9 +64,15 @@ void str_cli(FILE *fp, int sockfd) {
 size_t readline(int fd, void *ptr, size_t maxlen) {
   int n, rc;
   char c, *tptr;
+
+  tptr = ptr;
+
   for (n = 1; n < maxlen; n++) {
 again:
-    if ((rc = read(fd, &c, 1)) == 1) {
+    rc = read(fd, &c, 1);
+    // printf("rc = %d, char = %c\n", rc, c);
+    if (rc == 1) {
+      // printf("%c\n", c);
       *tptr++ = c;
       if (c == '\n')
         break;
