@@ -306,3 +306,26 @@ protocol of sockets for AF_INET of AF_INET6
 | int accept(int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen);          |
 |     returns: non-negative descriptor if OK, -1 on error                        |
 +--------------------------------------------------------------------------------+
+
+4.7 fork and exec Functions
++--------------------------------------------------------------------------------+
+| #include <unistd.h>                                                            |
+| pid_t fork(void);                                                              |
+|     Returns: 0 in child, process ID of child in parent, -1 on error            |
++--------------------------------------------------------------------------------+
+ the next step is for the parent to close the connected socket and the child to close the listening socket.
+
+4.9 close Function
++--------------------------------------------------------------------------------+
+| #include<unistd.h>                                                             |
+| int close(int sockfd);                                                         |
+|     returns: 0 if OK, -1 on error                                              |
++--------------------------------------------------------------------------------+
+
+4.10 getsockname and getpeername Functions
++--------------------------------------------------------------------------------+
+| #include <sys/socket.h>                                                        |
+| int getsockname(int sockfd, struct sockaddr *localaddr, socklen_t *addrlen);   |
+| int getpeername(int sockfd, struct sockaddr *peeraddr, socklen_t *addrlen);    |
+|     Both return: 0 if OK, -1 on error                                          |
++--------------------------------------------------------------------------------+
