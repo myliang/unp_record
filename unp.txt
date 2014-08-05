@@ -329,3 +329,100 @@ protocol of sockets for AF_INET of AF_INET6
 | int getpeername(int sockfd, struct sockaddr *peeraddr, socklen_t *addrlen);    |
 |     Both return: 0 if OK, -1 on error                                          |
 +--------------------------------------------------------------------------------+
+
+5.10 wait and waitpid Functions
++--------------------------------------------------------------------------------+
+| #include <sys/wait.h>                                                          |
+| pid_t wait(int *statloc);                                                      |
+| pid_t waitpid(pid_t pid, int *statloc, int options);                           |
+|     Both return: process ID if OK, 0 or -1 on error                            |
++--------------------------------------------------------------------------------+
+the return value of function
+
+5.11 Connection Abort before accept Returns
+
+client                              server
+socket connect(blocks) ---          socket,bind,listen LISTEN(passive open)
+                          |SYN        |
+                           ------>  SYN_RCVD
+connect returns <---SYN, ACK----------|
+  |
+  ---------------ACK--------------> EATABLISHED
+  ---------------RST-------------->   |
+                                      | accept called
+
+the three-way handshake completes, the connection is established, and then the client TCP sends an RST(reset).
+On the server side, the connection is queued by its TCP, waiting for the server process to call accept when the
+RST arrives. Sometime later, the server process calls accept.
+
+5.12 Termination of Server Process
+
+5.18 Data Format
+
+======================================================================================================================
+
+6.2 I/O Models
+
+ * blocking I/O
+ * nonblocking I/O
+ * I/O multiplexing (select and poll)
+ * signal driven I/O (SIGIO)
+ * asynchronous I/O (this posix aio_functions)
+
+
+6.3 select Functions
+
++-------------------------------------------------------------------------------------------------------------------+
+| #include <sys/select.h>                                                                                           |
+| #include <sys/time.h>                                                                                             |
+| int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, const struct timveval *timeout);    |
+|     Returns: positive count of ready descriptors, 0 on timeout, -1 on error                                       |
++-------------------------------------------------------------------------------------------------------------------+
+
+timeval:
+struct timeval {
+  long tv_sec;    // seconds
+  long tv_usec;   // microseconds
+}
+
+void FD_ZERO(fd_set *fdset);          // clear all bits id fdset
+void FD_SET(int fd, fd_set *fdset);   // turn on the bit for fd in fdset
+void FD_CLR(int fd, fd_set *fdset);   // turn off the bit for fd in fdset
+int FD_ISSET(int fd, fd_set *fdset);  // is the bit for fd on fdset ?
+
+Summary of conditions thata cause a socket to be ready for select
++------------------------------------------------------+---------------+--------------+-------------+
+| Condition                                            | Readable?     | Writable?    | Exception?  |
++------------------------------------------------------+---------------+--------------+-------------+
+| Date to read                                         |     *         |              |             |
+| Read half of the connection closed                   |     *         |              |             |
+| New connection ready for listening socket            |     *         |              |             |
++---------------------------------------------------------------------------------------------------+
+| Space avaliable for writing                          |               |     *        |             |
+| Write half of the connection closed                  |               |     *        |             |
++---------------------------------------------------------------------------------------------------+
+| Pending error                                        |     *         |     *        |             |
++---------------------------------------------------------------------------------------------------+
+| TCP out-of-band data                                 |               |              |    *        |
++---------------------------------------------------------------------------------------------------+
+
+6.6 shutdown Function
++---------------------------------------------------------------------------------------------------+
+| #include <sys/socket.h>                                                                           |
+| int shutdown(int sockfd, int howto);                                                              |
+|     Returns: 0 if OK, -1 on error                                                                 |
++---------------------------------------------------------------------------------------------------+
+ howto: SHUT_RD, SHUT_WR, SHUT_RDWR
+
+6.10 poll Function
++---------------------------------------------------------------------------------------------------+
+| #include <poll.h>                                                                                 |
+| int poll(struct pollfd *fdarray, unsigned long nfds, int timeout);                                |
+|     returns: count of ready descriptors, 0 on timeout, -1 on error                                |
++---------------------------------------------------------------------------------------------------+
+
+struct pollfd {
+  int fd;  // descriptor to check
+  short events; //events of inteerest on fd
+  short revents; // events that occurred on fd
+}
