@@ -426,3 +426,41 @@ struct pollfd {
   short events; //events of inteerest on fd
   short revents; // events that occurred on fd
 }
+
+Chapter 7 Socket Options
+7.2 getsockopt and setsockopt Functions
++---------------------------------------------------------------------------------------------------+
+| #include <sys/socket.h>                                                                           |
+| int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen);              |
+| int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);         |
+|     Both return: 0 if OK, -1 on error                                                             |
++---------------------------------------------------------------------------------------------------+
+
+7.11 fcntl Function
++---------------------------------------------------------------------------------------------------+
+| #include <fcntl.h>                                                                                |
+| int fcntl(int fd, int cmd, .../* int arg */);                                                     |
+|     Returns: depends on cmd if OK, -1 on error                                                    |
++---------------------------------------------------------------------------------------------------+
+we note that typical code to enable nonblocking I/O, using fcntl, would be:
+int flags;
+if ((flags = fcntl(fd, F_GETFL, 0)) < 0)
+  error
+if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0)
+  error
+
+=====================================================================================================
+
+Chapter 8. Elementary UDP Sockets
+
+8.1 Intraduction
+UDP client: socket() -> sendto() -> recvfrom() -> close()
+UDP server: socket() -> bind() -> recvfrom() -> sendto()
+
+8.2 recvfrom and sendto Functions
++------------------------------------------------------------------------------------------------------------------------+
+| #include <sys/socket.h>                                                                                                |
+| ssize_t recvfrom(int sockfd, void *buff, size_t nbytes, int flags, struct sockaddr *from, socklen_t *addrlen);         |
+| ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags, const struct sockaddr *to, socklen_t addrlen);  |
+|     Both return: number of bytes read or written if OK, -1 on error                                                    |
++------------------------------------------------------------------------------------------------------------------------+
