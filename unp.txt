@@ -464,3 +464,8 @@ UDP server: socket() -> bind() -> recvfrom() -> sendto()
 | ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags, const struct sockaddr *to, socklen_t addrlen);  |
 |     Both return: number of bytes read or written if OK, -1 on error                                                    |
 +------------------------------------------------------------------------------------------------------------------------+
+
+Part 3 : Advanced Sockets
+Chapter 13. Daemon Processes and the inetd superserver
+
+13.4 daemon_init Function
